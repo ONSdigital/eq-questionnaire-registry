@@ -15,22 +15,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eq-survey-registry
+  name: eq-questionnaire-registry
   labels:
-    app: eq-survey-registry
+    app: eq-questionnaire-registry
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: eq-survey-registry
+      app: eq-questionnaire-registry
   template:
     metadata:
       labels:
-        app: eq-survey-registry
+        app: eq-questionnaire-registry
     spec:
       containers:
-      - name: eq-survey-registry
-        image: eu.gcr.io/GOOGLE_CLOUD_PROJECT/eq-survey-registry:COMMIT_SHA
+      - name: eq-questionnaire-registry
+        image: eu.gcr.io/GOOGLE_CLOUD_PROJECT/eq-questionnaire-registry:COMMIT_SHA
         ports:
         - containerPort: 8080
         env:
@@ -48,10 +48,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: eq-survey-registry
+  name: eq-questionnaire-registry
 spec:
   selector:
-    app: eq-survey-registry
+    app: eq-questionnaire-registry
   ports:
   - protocol: TCP
     port: 80
