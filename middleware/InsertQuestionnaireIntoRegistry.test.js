@@ -31,20 +31,20 @@ const mockBadRequest = () => {
   }
 }
 
-describe.each(databases)("testing InsertSchemaIntoRegistry", (databaseName) => {
-  let res, req, insertSchemaIntoRegistry
+describe.each(databases)("testing insertQuestionnaireIntoRegistry", (databaseName) => {
+  let res, req, insertQuestionnaireIntoRegistry
   const next = jest.fn()
 
   beforeAll(() => {
     jest.resetModules()
     process.env.REGISTRY_DATABASE_SOURCE = databaseName
-    insertSchemaIntoRegistry = require("./insertSchemaIntoRegistry")
+    insertQuestionnaireIntoRegistry = require("./insertQuestionnaireIntoRegistry")
   })
 
   it(`should add a record into the registry using ${databaseName}`, async () => {
     res = mockResponse()
     req = mockRequest()
-    await insertSchemaIntoRegistry(req, res, next)
+    await insertQuestionnaireIntoRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: "Ok" })
   })
@@ -52,7 +52,7 @@ describe.each(databases)("testing InsertSchemaIntoRegistry", (databaseName) => {
   it(`should add a record into the registry using ${databaseName}`, async () => {
     res = mockResponse()
     req = mockRequest()
-    await insertSchemaIntoRegistry(req, res, next)
+    await insertQuestionnaireIntoRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: "Ok" })
   })
@@ -60,7 +60,7 @@ describe.each(databases)("testing InsertSchemaIntoRegistry", (databaseName) => {
   it(`should throw error when sending an incomplete request ${databaseName}`, async () => {
     res = mockResponse()
     req = mockBadRequest()
-    await insertSchemaIntoRegistry(req, res, next)
+    await insertQuestionnaireIntoRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ message: "Sorry, something went wrong inserting into the register" })
   })

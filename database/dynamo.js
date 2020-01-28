@@ -1,17 +1,17 @@
 const dynamoose = require("dynamoose")
 let throughput = "ON_DEMAND"
-let surveyRegistryTableName = "survey-registry"
+let registryTableName = "questionnaire-registry"
 
 if (process.env.DYNAMODB_ENDPOINT_OVERRIDE) {
   dynamoose.local(process.env.DYNAMODB_ENDPOINT_OVERRIDE)
   throughput = { read: 10, write: 10 } // DynamoDB local doesn't yet support on-demand
 }
 
-if (process.env.DYNAMO_SURVEY_REGISTRY_TABLE_NAME) {
-  surveyRegistryTableName = process.env.DYNAMO_SURVEY_REGISTRY_TABLE_NAME
+if (process.env.DYNAMO_QUESTIONNAIRE_REGISTRY_TABLE_NAME) {
+  registryTableName = process.env.DYNAMO_QUESTIONNAIRE_REGISTRY_TABLE_NAME
 }
 
-const surveyRegistrySchema = new dynamoose.Schema(
+const registrySchema = new dynamoose.Schema(
   {
     id: {
       type: String,
@@ -66,9 +66,9 @@ const surveyRegistrySchema = new dynamoose.Schema(
   }
 )
 
-const SurveyRegistryModel = dynamoose.model(
-  surveyRegistryTableName,
-  surveyRegistrySchema
+const RegistryModel = dynamoose.model(
+  registryTableName,
+  registrySchema
 )
 
 const getQuestionnaire = async (params) => {
@@ -86,7 +86,7 @@ const getQuestionnaire = async (params) => {
   const sortKey = `${params.version || "0"}`
 
   try {
-    data = await SurveyRegistryModel.get({ id: hash, sort_key: sortKey })
+    data = await RegistryModel.get({ id: hash, sort_key: sortKey })
     if (data) {
       return JSON.parse(data.schema)
     }
@@ -100,7 +100,7 @@ const getQuestionnaire = async (params) => {
 const saveQuestionnaire = async (data) => {
   data.id = `${data.survey_id}_${data.form_type}_${data.language}`
   data.sort_key = `0`
-  const currentModel = await SurveyRegistryModel.get({ id: data.id, sort_key: data.sort_key })
+  const currentModel = await RegistryModel.get({ id: data.id, sort_key: data.sort_key })
   try {
     if (currentModel) {
       data.registry_version = (parseInt(currentModel.registry_version) + 1).toString()
@@ -108,10 +108,10 @@ const saveQuestionnaire = async (data) => {
     else {
       data.registry_version = "1"
     }
-    const modelLatest = new SurveyRegistryModel(data)
+    const modelLatest = new RegistryModel(data)
     await modelLatest.save()
     data.sort_key = `${data.registry_version}`
-    const modelVersion = new SurveyRegistryModel(data)
+    const modelVersion = new RegistryModel(data)
     await modelVersion.save()
   }
   catch (e) {
@@ -124,10 +124,10 @@ const getQuestionnaireSummary = async (latest) => {
   const attributes = ["id", "sort_key", "survey_id", "form_type", "registry_version", "title", "language"]
   try {
     if (latest) {
-      data = await SurveyRegistryModel.scan('sort_key').eq("0").attributes(attributes).exec()
+      data = await RegistryModel.scan('sort_key').eq("0").attributes(attributes).exec()
     }
     else {
-      data = await SurveyRegistryModel.scan('sort_key').not().eq("0").attributes(attributes).exec()
+      data = await RegistryModel.scan('sort_key').not().eq("0").attributes(attributes).exec()
     }
   }
   catch (e) {
