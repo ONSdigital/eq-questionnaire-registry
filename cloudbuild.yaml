@@ -45,7 +45,7 @@ steps:
     - '-c'
     - |
       gcloud source repos clone eq-questionnaire-registry-env && \
-      cd eq-questionnaire-register-env && \
+      cd eq-questionnaire-registry-env && \
       git checkout ${_ENV}-candidate && \
       git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 
