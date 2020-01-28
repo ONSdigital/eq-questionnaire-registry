@@ -1,0 +1,43 @@
+version: "3"
+services:
+  firestore:
+    image: mtlynch/firestore-emulator-docker
+    environment:
+      - FIRESTORE_PROJECT_ID=test-project
+      - PORT=8080
+    ports:
+      - 8200:8080
+
+  web:
+    build:
+      context: .
+    depends_on:
+      - dynamo
+      - firestore
+    links:
+      - dynamo
+      - firestore
+    volumes:
+      - .:/app
+    ports:
+      - 8080:8080
+    environment:
+      - AWS_REGION=eu-west-1
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+      - NODE_ENV=development
+      - PUBLISHER_URL=http://host.docker.internal:9000/publish/
+      - DYNAMODB_ENDPOINT_OVERRIDE=http://host.docker.internal:8090
+      - FIRESTORE_EMULATOR_HOST=host.docker.internal:8200
+      - FIRESTORE_PROJECT_ID=test-project
+      - GOOGLE_AUTH_PROJECT_ID=test-project
+      - REGISTRY_DATABASE_SOURCE=firestore
+    entrypoint:
+      - yarn
+      - start
+
+  dynamo:
+    image: amazon/dynamodb-local
+    ports:
+      - 8090:8000
+

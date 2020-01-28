@@ -1,0 +1,76 @@
+# [START cloudbuild]
+steps:
+# This step starts the backing services
+  - name: 'docker/compose'
+    id: 'databases'
+    args: ['-f', 'docker-compose-ci.yml', 'up', '-d']
+
+# This step runs the unit tests on the app
+  - name: 'node:10.18.1-alpine'
+    id: Test
+    entrypoint: /bin/sh
+    args:
+    - -c
+    - |
+      yarn install && \
+      apk add --no-cache --upgrade bash && \
+      ./scripts/test-ci.sh
+    waitFor: [databases]
+
+# This step stops the backing services
+  - name: 'docker/compose'
+    args: ['-f', 'docker-compose-ci.yml', 'down']
+
+# This step builds the container image.
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build
+    args:
+    - 'build'
+    - '-t'
+    - 'eu.gcr.io/$PROJECT_ID/eq-survey-registry:$SHORT_SHA'
+    - '.'
+
+# This step pushes the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    args:
+    - 'push'
+    - 'eu.gcr.io/$PROJECT_ID/eq-survey-registry:$SHORT_SHA'
+
+# This step clones the hello-cloudbuild-env repository
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Clone env repository
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      gcloud source repos clone eq-survey-register-env && \
+      cd eq-survey-register-env && \
+      git checkout ${_ENV}-candidate && \
+      git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+
+# This step generates the new manifest
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Generate manifest
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" kubernetes.yaml.tpl | \
+      sed "s/COMMIT_SHA/${SHORT_SHA}/g" > eq-survey-register-env/kubernetes.yaml
+
+# This step pushes the manifest back to hello-cloudbuild-env
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Push manifest
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      set -x && \
+      cd eq-survey-register-env && \
+      git add kubernetes.yaml && \
+      git commit -m "Deploying image eu.gcr.io/${PROJECT_ID}/eq-survey-register-env:${SHORT_SHA}
+      Built from commit ${COMMIT_SHA} of repository eq-survey-register
+      Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
+      git push origin ${_ENV}-candidate
+# [END cloudbuild]

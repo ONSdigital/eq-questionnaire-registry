@@ -1,0 +1,56 @@
+{
+  "name": "eq-survey-register",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ONSdigital/eq-survey-register.git",
+  "author": "martyncolmer <martyc1974@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon",
+    "start_service": "node index.js",
+    "dynamodb-admin": "AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy DYNAMO_ENDPOINT=http://localhost:8090 dynamodb-admin",
+    "lint": "eslint .",
+    "test": "./scripts/test.sh",
+    "test-ci": "scripts/test.sh"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^3.4.0",
+    "dotenv": "^8.2.0",
+    "dynamoose": "^1.11.1",
+    "express": "^4.17.1",
+    "jest": "^25.1.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8",
+    "uuid": "^3.4.0",
+    "wait-on": "^4.0.0"
+  },
+  "devDependencies": {
+    "dynamodb-admin": "^3.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jasmine": "^4.1.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "nodemon": "^2.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!config/**/*",
+      "!coverage/**/*",
+      "!tests/**/*",
+      "!**/tests/**/*",
+      "!scripts/*",
+      "!middleware/index.js",
+      "!index.js"
+    ],
+    "watchPathIgnorePatterns": [
+      "data/"
+    ]
+  }
+}
