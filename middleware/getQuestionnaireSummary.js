@@ -6,7 +6,7 @@ const getQuestionnaireSummary = async (req, res, next) => {
     res.status(200).json(Questionnaires)
   }
   catch (e) {
-    res.status(500).json({ message: "Error listing all questionnaires" })
+    res.status(500).json({ message: "Error listing questionnaires" })
   }
 }
 
