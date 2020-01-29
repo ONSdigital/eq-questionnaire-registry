@@ -19,7 +19,6 @@ const getQuestionnaireFromRegistry = async (req, res, next) => {
     next()
   }
   catch (e) {
-    console.log(e)
     res.status(500).json({
       message: "Sorry, could not retrieve the schema from the register"
     })

@@ -60,8 +60,10 @@ describe.each(databases)("testing insertQuestionnaireIntoRegistry", (databaseNam
   it(`should throw error when sending an incomplete request ${databaseName}`, async () => {
     res = mockResponse()
     req = mockBadRequest()
+    const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
     await insertQuestionnaireIntoRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ message: "Sorry, something went wrong inserting into the register" })
+    spy.mockRestore()
   })
 })

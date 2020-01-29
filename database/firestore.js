@@ -15,7 +15,9 @@ const getQuestionnaire = async (params) => {
   let hash, doc
 
   if (!params.id && (!params.survey_id || !params.form_type)) {
-    throw new Error("id or survey_id and form_type not provided in request")
+    const newErr = new Error("id or survey_id and form_type not provided in request")
+    console.log(newErr)
+    throw newErr
   }
 
   if (params.id) {
@@ -36,6 +38,7 @@ const getQuestionnaire = async (params) => {
     return JSON.parse(data.schema)
   }
   catch (e) {
+    console.log(e)
     throw new Error("error getting record")
   }
 }
@@ -59,6 +62,7 @@ const saveQuestionnaire = async (data) => {
     await docRef.set(data)
   }
   catch (e) {
+    console.log(e)
     throw new Error("error saving record")
   }
 }
@@ -74,6 +78,7 @@ const getQuestionnaireSummary = async (latest) => {
     result = await colRef.get()
   }
   catch (e) {
+    console.log(e)
     throw new Error("error getting summary")
   }
 

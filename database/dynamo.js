@@ -74,7 +74,9 @@ const RegistryModel = dynamoose.model(
 const getQuestionnaire = async (params) => {
   let hash, data
   if (!params.id && (!params.survey_id || !params.form_type)) {
-    throw new Error("id or survey_id and form_type not provided in request")
+    const newErr = new Error("id or survey_id and form_type not provided in request")
+    console.log(newErr)
+    throw newErr
   }
 
   if (params.id) {
@@ -93,6 +95,7 @@ const getQuestionnaire = async (params) => {
     return
   }
   catch (e) {
+    console.log(e)
     throw new Error("error getting record")
   }
 }
@@ -115,6 +118,7 @@ const saveQuestionnaire = async (data) => {
     await modelVersion.save()
   }
   catch (e) {
+    console.log(e)
     throw new Error("error saving record")
   }
 }
@@ -131,6 +135,7 @@ const getQuestionnaireSummary = async (latest) => {
     }
   }
   catch (e) {
+    console.log(e)
     throw new Error("error getting summary")
   }
   return JSON.parse(JSON.stringify(data))
