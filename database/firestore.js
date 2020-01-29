@@ -74,7 +74,6 @@ const getQuestionnaireSummary = async (latest) => {
     result = await colRef.get()
   }
   catch (e) {
-    console.log(e)
     throw new Error("error getting summary")
   }
 
