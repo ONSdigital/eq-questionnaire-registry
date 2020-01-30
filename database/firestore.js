@@ -3,7 +3,7 @@ const { Firestore } = require('@google-cloud/firestore')
 let db
 if (process.env.GOOGLE_AUTH_PROJECT_ID) {
   db = new Firestore({
-    projectId: process.env.FIRESTORE_PROJECT_ID
+    projectId: process.env.GOOGLE_AUTH_PROJECT_ID
     // keyFilename: '../test_firestore_account.json'
   })
 }

@@ -42,6 +42,7 @@ describe.each(databases)("testing getQuestionnaireFromRegistry", (databaseName) 
   beforeAll(async () => {
     jest.resetModules()
     process.env.REGISTRY_DATABASE_SOURCE = databaseName
+    process.env.GOOGLE_AUTH_PROJECT_ID = "test-project"
     getQuestionnaireFromRegistry = require("./getQuestionnaireFromRegistry")
     database = require("../database")
     await database.saveQuestionnaire(mockModel())
@@ -71,5 +72,13 @@ describe.each(databases)("testing getQuestionnaireFromRegistry", (databaseName) 
     await getQuestionnaireFromRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ message: "No record found" })
+  })
+
+  it(`should throw an error getting record when missing key fields ${databaseName}`, async () => {
+    req = {}
+    res = mockResponse()
+    const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
+    await getQuestionnaireFromRegistry(req, res, next)
+    spy.mockRestore()
   })
 })

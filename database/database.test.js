@@ -1,5 +1,5 @@
 const databases = ["dynamo", "firestore", ""]
-
+process.env.DYNAMO_QUESTIONNAIRE_REGISTRY_TABLE_NAME = "questionnaire-registry"
 const mockModel = () => {
   return {
     author_id: "123",
