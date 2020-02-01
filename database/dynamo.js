@@ -1,4 +1,5 @@
 const dynamoose = require("dynamoose")
+const { uuid } = require('uuidv4')
 let throughput = "ON_DEMAND"
 let registryTableName = "questionnaire-registry"
 
@@ -39,11 +40,21 @@ const registrySchema = new dynamoose.Schema(
       type: String,
       required: true
     },
-    survey_version: {
+    qid: {
+      type: String,
+      required: true,
+      index: {
+        global: true,
+        rangeKey: 'language',
+        project: true,
+        throughput: throughput
+      }
+    },
+    language: {
       type: String,
       required: true
     },
-    language: {
+    title: {
       type: String,
       required: true
     },
@@ -51,7 +62,7 @@ const registrySchema = new dynamoose.Schema(
       type: String,
       required: true
     },
-    title: {
+    survey_version: {
       type: String,
       required: true
     },
@@ -72,23 +83,24 @@ const RegistryModel = dynamoose.model(
 )
 
 const getQuestionnaire = async (params) => {
-  let hash, data
+  let data
   if (!params.id && (!params.survey_id || !params.form_type)) {
     const newErr = new Error("id or survey_id and form_type not provided in request")
     console.log(newErr)
     throw newErr
   }
-
-  if (params.id) {
-    hash = `${params.id}`
-  }
-  else {
-    hash = `${params.survey_id}_${params.form_type}_${params.language || "en"}`
-  }
-  const sortKey = `${params.version || "0"}`
-
   try {
-    data = await RegistryModel.get({ id: hash, sort_key: sortKey })
+    if (params.id) {
+      const qid = `${params.id}`
+      const language = `${params.language || "en"}`
+      data = await RegistryModel.queryOne({ qid: qid, language: language }).exec()
+    }
+    else {
+      const id = `${params.survey_id}_${params.form_type}_${params.language || "en"}`
+      const sortKey = `${params.version || "0"}`
+      data = await RegistryModel.get({ id: id, sort_key: sortKey })
+    }
+
     if (data) {
       return JSON.parse(data.schema)
     }
@@ -101,6 +113,9 @@ const getQuestionnaire = async (params) => {
 }
 
 const saveQuestionnaire = async (data) => {
+  if (!data.qid) {
+    data.qid = uuid()
+  }
   data.id = `${data.survey_id}_${data.form_type}_${data.language}`
   data.sort_key = `0`
   const currentModel = await RegistryModel.get({ id: data.id, sort_key: data.sort_key })
@@ -125,7 +140,7 @@ const saveQuestionnaire = async (data) => {
 
 const getQuestionnaireSummary = async (latest) => {
   let data
-  const attributes = ["id", "sort_key", "survey_id", "form_type", "registry_version", "title", "language"]
+  const attributes = ["id", "sort_key", "survey_id", "form_type", "registry_version", "title", "language", "qid"]
   try {
     if (latest) {
       data = await RegistryModel.scan('sort_key').eq("0").attributes(attributes).exec()

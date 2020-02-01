@@ -1,4 +1,5 @@
 const database = require("../database")
+const { uuid } = require('uuidv4')
 
 const themeLookup = {
   "Northern Ireland": "northernireland",
@@ -16,6 +17,7 @@ const insertIntoSurveyResister = async (req, res, next) => {
       const questionnaire = res.questionnaire
       questionnaire.theme = themeLookup[key]
       questionnaire.form_type = formTypes[key]
+      const qid = uuid()
       const model = {
         author_id: questionnaire.eq_id,
         survey_id: surveyId,
@@ -25,7 +27,8 @@ const insertIntoSurveyResister = async (req, res, next) => {
         schema: JSON.stringify(questionnaire),
         title: questionnaire.title,
         language: language,
-        runner_version: runner_version
+        runner_version: runner_version,
+        qid: qid
       }
       await database.saveQuestionnaire(model)
     })

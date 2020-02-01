@@ -1,4 +1,4 @@
-const databases = ["firestore"]
+const databases = ["firestore", "dynamo"]
 process.env.DYNAMO_QUESTIONNAIRE_REGISTRY_TABLE_NAME = "questionnaire-registry"
 const mockModel = () => {
   return {
