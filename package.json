@@ -21,7 +21,7 @@
     "jest": "^25.1.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
-    "uuid": "^3.4.0",
+    "uuidv4": "^6.0.2",
     "wait-on": "^4.0.0"
   },
   "devDependencies": {

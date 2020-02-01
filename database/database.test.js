@@ -1,12 +1,12 @@
-const databases = ["dynamo", "firestore", ""]
+const databases = ["firestore"]
 process.env.DYNAMO_QUESTIONNAIRE_REGISTRY_TABLE_NAME = "questionnaire-registry"
 const mockModel = () => {
   return {
     author_id: "123",
-    survey_id: "123",
-    form_type: "456",
+    survey_id: "db_test_001",
+    form_type: "123",
     survey_version: "1",
-    schema: JSON.stringify({ eq_id: "123", version: "1", title: "test" }),
+    schema: JSON.stringify({ eq_id: "eqid_001", schema_version: "1", title: "test" }),
     title: "test",
     language: "en",
     runner_version: "v1"
@@ -15,9 +15,9 @@ const mockModel = () => {
 
 const mockRequest = () => {
   return {
-    survey_id: "123",
+    survey_id: "db_test_001",
     language: "en",
-    form_type: "456"
+    form_type: "123"
   }
 }
 
@@ -28,10 +28,12 @@ describe.each(databases)("testing database modules", (databaseName) => {
     jest.resetModules()
     process.env.REGISTRY_DATABASE_SOURCE = databaseName
     database = require(".")
-    model = mockModel()
     req = mockRequest()
+    model = mockModel()
+    model.qid = "db_qid_001"
     await database.saveQuestionnaire(model)
-    model.schema = JSON.stringify({ eq_id: "123", version: "2", title: "test" })
+    model.schema = JSON.stringify({ eq_id: "eqid_002", schema_version: "2", title: "test" })
+    model.qid = "db_qid_002"
     await database.saveQuestionnaire(model)
   })
 
@@ -42,23 +44,25 @@ describe.each(databases)("testing database modules", (databaseName) => {
   })
 
   it(`should retrieve the latest version using ${databaseName}`, async () => {
+    model = mockModel()
+    model.survey_id = "db_test_002"
     data = await database.getQuestionnaire(req)
-    expect(data).toMatchObject({ eq_id: "123", title: "test" })
-    expect(data).toMatchObject({ version: "2" })
+    expect(data).toMatchObject({ eq_id: "eqid_002", title: "test" })
+    expect(data).toMatchObject({ schema_version: "2" })
   })
 
   it(`should retrieve a specific version using ${databaseName}`, async () => {
     req.version = "1"
     data = await database.getQuestionnaire(req)
-    expect(data).toMatchObject({ eq_id: "123", title: "test" })
-    expect(data).toMatchObject({ version: "1" })
+    expect(data).toMatchObject({ eq_id: "eqid_001", title: "test" })
+    expect(data).toMatchObject({ schema_version: "1" })
   })
 
   it(`should retrieve a specific version using id using ${databaseName}`, async () => {
-    req = { id: "123_456_en" }
+    req = { id: "db_qid_002" }
     data = await database.getQuestionnaire(req)
-    expect(data).toMatchObject({ eq_id: "123", title: "test" })
-    expect(data).toMatchObject({ version: "2" })
+    expect(data).toMatchObject({ eq_id: "eqid_002", title: "test" })
+    expect(data).toMatchObject({ schema_version: "2" })
   })
 
   it(`should throw an error getting record when missing key fields ${databaseName}`, async () => {
@@ -70,13 +74,13 @@ describe.each(databases)("testing database modules", (databaseName) => {
 
   it(`should retieve a list of latest schema version using ${databaseName}`, async () => {
     data = await database.getQuestionnaireSummary(true)
-    expect(data).toEqual(expect.arrayContaining([expect.objectContaining({ sort_key: "0" })]))
-    expect(data).toEqual(expect.not.arrayContaining([expect.objectContaining({ sort_key: "1" })]))
+    expect(data).toEqual(expect.not.arrayContaining([expect.objectContaining({ qid: "db_qid_001" })]))
+    expect(data).toEqual(expect.arrayContaining([expect.objectContaining({ qid: "db_qid_002" })]))
   })
 
   it(`should retieve a list of all schema version using ${databaseName}`, async () => {
     data = await database.getQuestionnaireSummary(false)
-    expect(data).toEqual(expect.arrayContaining([expect.objectContaining({ sort_key: "1" })]))
-    expect(data).toEqual(expect.not.arrayContaining([expect.objectContaining({ sort_key: "0" })]))
+    expect(data).toEqual(expect.arrayContaining([expect.objectContaining({ qid: "db_qid_001" })]))
+    expect(data).toEqual(expect.arrayContaining([expect.objectContaining({ qid: "db_qid_002" })]))
   })
 })

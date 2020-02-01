@@ -12,7 +12,7 @@ const mockRequest = () => {
     params: {},
     query: {},
     body: {
-      survey_id: "001",
+      survey_id: "qs_test_001",
       form_type: "456",
       language: "en"
     }
@@ -23,11 +23,11 @@ const mockRequest = () => {
 const mockModel = () => {
   const model = {
     author_id: "678",
-    survey_id: "001",
+    survey_id: "qs_test_001",
     form_type: "456",
     date_published: Date.now(),
     survey_version: "1",
-    schema: JSON.stringify({ eq_id: "456", test: "test123" }),
+    schema: JSON.stringify({ eq_id: "eqid_qs_001", test: "test123" }),
     title: "A test",
     language: "en",
     runner_version: "v2"
@@ -44,9 +44,9 @@ describe.each(databases)("testing getQuestionnaireSummary", (databaseName) => {
     process.env.REGISTRY_DATABASE_SOURCE = databaseName
     getQuestionnaireSummary = require("./getQuestionnaireSummary")
     database = require("../database")
-    const mock = mockModel()
+    let mock = mockModel()
     await database.saveQuestionnaire(mock)
-    mock.survey_id = '789'
+    mock = mockModel()
     await database.saveQuestionnaire(mock)
   })
 
@@ -56,19 +56,17 @@ describe.each(databases)("testing getQuestionnaireSummary", (databaseName) => {
     req.latest = true
     await getQuestionnaireSummary(req, res, next)
     expect(res.status).toHaveBeenCalledWith(200)
-    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "001", form_type: "456" })]))
-    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "789", form_type: "456" })]))
-    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ sort_key: "0" })]))
+    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "qs_test_001", form_type: "456", registry_version: "2" })]))
+    expect(res.json).toBeCalledWith(expect.not.arrayContaining([expect.objectContaining({ survey_id: "qs_test_001", form_type: "456", registry_version: "1" })]))
   })
 
-  it(`should return a list of all versions of questionnaires excluding latest ${databaseName}`, async () => {
+  it(`should return a list of all versions of questionnaires ${databaseName}`, async () => {
     res = mockResponse()
     req = mockRequest()
     req.latest = false
     await getQuestionnaireSummary(req, res, next)
     expect(res.status).toHaveBeenCalledWith(200)
-    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "001", form_type: "456" })]))
-    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "789", form_type: "456" })]))
-    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.not.objectContaining({ sort_key: "0" })]))
+    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "qs_test_001", form_type: "456", registry_version: "2" })]))
+    expect(res.json).toBeCalledWith(expect.arrayContaining([expect.objectContaining({ survey_id: "qs_test_001", form_type: "456", registry_version: "1" })]))
   })
 })
