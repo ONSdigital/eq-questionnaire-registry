@@ -1,5 +1,6 @@
 const database = require("../database")
 const { uuid } = require('uuidv4')
+const getQuestionnaireFromPublisher = require("./getQuestionnaireFromPublisher")
 
 const themeLookup = {
   "Northern Ireland": "northernireland",
@@ -10,30 +11,37 @@ const themeLookup = {
 }
 
 const insertIntoSurveyResister = async (req, res, next) => {
-  const { surveyId, formTypes, surveyVersion, runner_version = "v2", language = "en" } = req.body
   let error = false
+  const data = req.body.publish
   try {
-    Object.keys(formTypes).forEach(async (key) => {
-      const questionnaire = res.questionnaire
-      questionnaire.theme = themeLookup[key]
-      questionnaire.form_type = formTypes[key]
+    if (!data) {
+      throw new Error("No data in request body")
+    }
+    for (const doc of data) {
+      const { survey_id, form_type, schemas } = doc
       const qid = uuid()
-      const model = {
-        author_id: questionnaire.eq_id,
-        survey_id: surveyId,
-        form_type: formTypes[key],
-        date_published: Date.now(),
-        survey_version: surveyVersion,
-        schema: JSON.stringify(questionnaire),
-        title: questionnaire.title,
-        language: language,
-        runner_version: runner_version,
-        qid: qid
+      for (const schema of schemas) {
+        const questionnaire = await getQuestionnaireFromPublisher(schema.author_id)
+        questionnaire.theme = themeLookup[schema.theme]
+        questionnaire.form_type = form_type
+        const model = {
+          author_id: schema.author_id,
+          survey_id: survey_id,
+          form_type: form_type,
+          date_published: Date.now(),
+          survey_version: schema.survey_version || "v0",
+          schema: JSON.stringify(questionnaire),
+          title: questionnaire.title,
+          language: schema.language || "en",
+          runner_version: schema.runner_version || "v0",
+          qid: qid
+        }
+        await database.saveQuestionnaire(model)
       }
-      await database.saveQuestionnaire(model)
-    })
+    }
   }
   catch (e) {
+    console.log(e)
     error = true
   }
 

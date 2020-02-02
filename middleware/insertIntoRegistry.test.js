@@ -11,9 +11,17 @@ const mockResponse = () => {
 const mockRequest = () => {
   return {
     body: {
-      surveyId: "1",
-      formTypes: { ONS: "123" },
-      surveyVersion: "2"
+      publish: [{
+        survey_id: "ins_test_001",
+        form_type: "123",
+        schemas: [
+          {
+            language: "en",
+            theme: "ONS",
+            author_id: "456",
+            survey_version: "1"
+          }]
+      }]
     }
   }
 }
@@ -26,30 +34,42 @@ const mockBadRequest = () => {
   }
 }
 
+const mockDbCall = () => {
+  return {
+    survey_id: "ins_test_001",
+    form_type: "123"
+  }
+}
+
 describe.each(databases)("testing InsertIntoRegistry", (databaseName) => {
-  let res, req, insertIntoRegistry
+  let res, req, insertIntoRegistry, database
   const next = jest.fn()
 
   beforeAll(() => {
     jest.resetModules()
     process.env.REGISTRY_DATABASE_SOURCE = databaseName
     insertIntoRegistry = require("./insertIntoRegistry")
+    database = require("../database")
+    jest.mock('./getQuestionnaireFromPublisher', () => () => (mockSchema()))
   })
 
   it(`should add a record into the registry using ${databaseName}`, async () => {
     res = mockResponse()
     req = mockRequest()
     await insertIntoRegistry(req, res, next)
+    const checkData = await database.getQuestionnaire(mockDbCall())
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: "Ok" })
+    expect(checkData).toEqual(expect.objectContaining({ form_type: "123" }))
   })
 
   it(`should throw an error when sending a bad request using ${databaseName}`, async () => {
     res = mockResponse()
     req = mockBadRequest()
+    const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
     await insertIntoRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ message: "Sorry, something went wrong inserting into the register" })
+    spy.mockRestore()
   })
-
 })

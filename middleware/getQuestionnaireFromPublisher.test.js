@@ -24,24 +24,19 @@ const mockRequest = () => {
 }
 
 describe("testing getQuestionnaireFromPublisher", () => {
-  let res, req
-  const next = jest.fn()
+  let req
 
   it(`should get the return a schema from the registry`, async () => {
-    res = mockResponse()
     req = mockRequest()
     request.mockResolvedValue(mockSchema())
-    await getQuestionnaireFromPublisher(req, res, next)
-    expect(res.questionnaire).toMatchObject(mockSchema())
+    expect(await getQuestionnaireFromPublisher(req)).toMatchObject(mockSchema())
   })
 
   it(`should handle a thrown error`, async () => {
-    res = mockResponse()
-    req = mockRequest()
+    req = { questionnaireId: "123" }
     request.mockImplementation(async () => {
       throw new Error("test error")
     })
-    await getQuestionnaireFromPublisher(req, res, next)
-    expect(res.status).toHaveBeenCalledWith(500)
+    expect(getQuestionnaireFromPublisher(req)).rejects.toEqual(new Error("Sorry, something went wrong with the Publisher request"))
   })
 })
