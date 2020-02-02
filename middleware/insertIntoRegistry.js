@@ -24,6 +24,7 @@ const insertIntoSurveyResister = async (req, res, next) => {
         const questionnaire = await getQuestionnaireFromPublisher(schema.author_id)
         questionnaire.theme = themeLookup[schema.theme]
         questionnaire.form_type = form_type
+        questionnaire.survey_id = survey_id
         const model = {
           author_id: schema.author_id,
           survey_id: survey_id,

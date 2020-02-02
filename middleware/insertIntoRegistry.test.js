@@ -58,7 +58,7 @@ describe.each(databases)("testing InsertIntoRegistry", (databaseName) => {
     const checkData = await database.getQuestionnaire(mockDbCall())
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: "Ok" })
-    expect(checkData).toEqual(expect.objectContaining({ form_type: "123" }))
+    expect(checkData).toEqual(expect.objectContaining({ survey_id: "ins_test_001", form_type: "123" }))
   })
 
   it(`should throw an error when sending a bad request using ${databaseName}`, async () => {
