@@ -12,7 +12,7 @@ const themeLookup = {
 
 const insertIntoSurveyResister = async (req, res, next) => {
   let error = false
-  const data = req.body.publish
+  const data = req.body
   try {
     if (!data) {
       throw new Error("No data in request body")

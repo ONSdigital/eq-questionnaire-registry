@@ -10,19 +10,17 @@ const mockResponse = () => {
 
 const mockRequest = () => {
   return {
-    body: {
-      publish: [{
-        survey_id: "ins_test_001",
-        form_type: "123",
-        schemas: [
-          {
-            language: "en",
-            theme: "ONS",
-            author_id: "456",
-            survey_version: "1"
-          }]
-      }]
-    }
+    body: [{
+      survey_id: "ins_test_001",
+      form_type: "123",
+      schemas: [
+        {
+          language: "en",
+          theme: "ONS",
+          author_id: "456",
+          survey_version: "1"
+        }]
+    }]
   }
 }
 
