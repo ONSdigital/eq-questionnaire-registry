@@ -23,7 +23,7 @@ app.get("/surveys/:survey_id/form-types/:form_type/languages/:language", getQues
 app.get("/surveys/:survey_id/form-types/:form_type/versions/:version", getQuestionnaireFromRegistry)
 app.get("/surveys/:survey_id/form-types/:form_type/languages/:language/versions/:version", getQuestionnaireFromRegistry)
 
-app.get("/summary-latest",
+app.get("/questionnaires",
   express.json(),
   (req, res, next) => {
     req.latest = true; next()
@@ -31,7 +31,7 @@ app.get("/summary-latest",
   getQuestionnaireSummary
 )
 
-app.get("/summary-all",
+app.get("/questionnaires/versions",
   express.json(),
   (req, res, next) => {
     req.latest = false; next()
