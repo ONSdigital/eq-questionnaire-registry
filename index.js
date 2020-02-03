@@ -10,10 +10,10 @@ const {
 
 const app = express()
 
-app.put("/submit", express.json(), insertIntoRegistry)
-app.post("/submit", express.json(), insertIntoRegistry)
-app.put("/submit-json", express.json(), insertQuestionnaireIntoRegistry)
-app.post("/submit-json", express.json(), insertQuestionnaireIntoRegistry)
+app.put("/questionnaires", express.json(), insertIntoRegistry)
+app.post("/questionnaires", express.json(), insertIntoRegistry)
+app.put("/questionnaires-json", express.json(), insertQuestionnaireIntoRegistry)
+app.post("/questionnaires-json", express.json(), insertQuestionnaireIntoRegistry)
 
 app.get("/questionnaires", express.json(), getQuestionnaireFromRegistry)
 app.get("/questionnaires/:id", getQuestionnaireFromRegistry)
