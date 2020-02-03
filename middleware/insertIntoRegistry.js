@@ -20,22 +20,24 @@ const insertIntoSurveyResister = async (req, res, next) => {
     for (const doc of data) {
       const { survey_id, form_type, schemas } = doc
       const qid = uuid()
-      for (const schema of schemas) {
-        const questionnaire = await getQuestionnaireFromPublisher(schema.author_id)
-        questionnaire.theme = themeLookup[schema.theme]
+      for (const schemaInfo of schemas) {
+        const questionnaire = await getQuestionnaireFromPublisher(schemaInfo.author_id)
+        questionnaire.theme = themeLookup[schemaInfo.theme]
         questionnaire.form_type = form_type
         questionnaire.survey_id = survey_id
+        const { survey_version = "0", title } = questionnaire
+        const { author_id, language = "en", runner_version = "v0" } = schemaInfo
         const model = {
-          author_id: schema.author_id,
-          survey_id: survey_id,
-          form_type: form_type,
+          author_id,
+          survey_id,
+          form_type,
           date_published: Date.now(),
-          survey_version: schema.survey_version || "v0",
+          survey_version,
           schema: JSON.stringify(questionnaire),
-          title: questionnaire.title,
-          language: schema.language || "en",
-          runner_version: schema.runner_version || "v0",
-          qid: qid
+          title,
+          language,
+          runner_version,
+          qid
         }
         await database.saveQuestionnaire(model)
       }
