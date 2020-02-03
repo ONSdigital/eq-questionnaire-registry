@@ -82,14 +82,33 @@ include the following in the body of the json request.
 
 
 ```
-{
-  "questionnaire_id":"123"
-  "surveyId":"123", 
-  "formTypes":"[{"ons","123"}]", 
-  "surveyVersion":"1", 
-  "runner_version": "v2", 
-  "language": "en"
-}
+[
+	{
+	"survey_id": "XXXX",
+	"form_type": "XXXX",
+	"schemas" : [
+		{"language": "XX",
+		"theme": "XXX",
+    "title": "XXX", 
+		"author_id": "XXXX",
+    "runner_version": "XX"},
+		{"language": "XX",
+		"theme": "XXX",
+    "title": "XXX", 
+		"author_id": "XXXX",
+    "runner_version": "XX"}
+	]},
+	{
+	"survey_id": "XXXX",
+	"form_type": "XXXX",
+	"schemas" : [
+		{"language": "XX",
+		"theme": "XXX",
+    "title": "XXX", 
+		"author_id": "XXXX",
+    "runner_version": "XX"}
+	]}
+]
 ```
 These values are provided by author, hence the camel case attributes.
 
