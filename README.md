@@ -89,14 +89,10 @@ include the following in the body of the json request.
 	"schemas" : [
 		{"language": "XX",
 		"theme": "XXX",
-    "title": "XXX", 
-		"author_id": "XXXX",
-    "runner_version": "XX"},
+		"author_id": "XXXX"},
 		{"language": "XX",
 		"theme": "XXX",
-    "title": "XXX", 
-		"author_id": "XXXX",
-    "runner_version": "XX"}
+		"author_id": "XXXX"}
 	]},
 	{
 	"survey_id": "XXXX",
@@ -104,9 +100,7 @@ include the following in the body of the json request.
 	"schemas" : [
 		{"language": "XX",
 		"theme": "XXX",
-    "title": "XXX", 
-		"author_id": "XXXX",
-    "runner_version": "XX"}
+		"author_id": "XXXX"}
 	]}
 ]
 ```
