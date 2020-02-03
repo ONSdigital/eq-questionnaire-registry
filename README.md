@@ -66,13 +66,13 @@ The REST API is exposed with the following endpoints
 /submit-json
 /summary-latest
 /summary-all
-/retrieve
-/retrieve/id/:id
-/retrieve/id/:id/version/:version
-/retrieve/survey_id/:survey_id/form_type/:formtype
-/retrieve/survey_id/:survey_id/form_type/:formtype/language/:language
-/retrieve/survey_id/:survey_id/form_type/:formtype/version/:version
-/retrieve/survey_id/:survey_id/form_type/:formtype/language/:language/version/:version
+/questionnaires
+/questionnaires/:id
+/questionnaires/:id/version/:version
+/surveys/:survey_id/form-types/:form_type
+/surveys/:survey_id/form-types/:form_type/languages/:language
+/surveys/:survey_id/form-types/:form_type/versions/:version
+/surveys/:survey_id/form-types/:form_type/languages/:language/versions/:version
 /status
 ```
 

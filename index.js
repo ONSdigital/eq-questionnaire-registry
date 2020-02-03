@@ -15,13 +15,13 @@ app.post("/submit", express.json(), insertIntoRegistry)
 app.put("/submit-json", express.json(), insertQuestionnaireIntoRegistry)
 app.post("/submit-json", express.json(), insertQuestionnaireIntoRegistry)
 
-app.get("/retrieve", express.json(), getQuestionnaireFromRegistry)
-app.get("/retrieve/id/:id", getQuestionnaireFromRegistry)
-app.get("/retrieve/id/:id/version/:version", getQuestionnaireFromRegistry)
-app.get("/retrieve/survey_id/:survey_id/form_type/:formtype", getQuestionnaireFromRegistry)
-app.get("/retrieve/survey_id/:survey_id/form_type/:formtype/language/:language", getQuestionnaireFromRegistry)
-app.get("/retrieve/survey_id/:survey_id/form_type/:formtype/version/:version", getQuestionnaireFromRegistry)
-app.get("/retrieve/survey_id/:survey_id/form_type/:formtype/language/:language/version/:version", getQuestionnaireFromRegistry)
+app.get("/questionnaires", express.json(), getQuestionnaireFromRegistry)
+app.get("/questionnaires/:id", getQuestionnaireFromRegistry)
+app.get("/questionnaires/:id/version/:version", getQuestionnaireFromRegistry)
+app.get("/surveys/:survey_id/form-types/:form_type", getQuestionnaireFromRegistry)
+app.get("/surveys/:survey_id/form-types/:form_type/languages/:language", getQuestionnaireFromRegistry)
+app.get("/surveys/:survey_id/form-types/:form_type/versions/:version", getQuestionnaireFromRegistry)
+app.get("/surveys/:survey_id/form-types/:form_type/languages/:language/versions/:version", getQuestionnaireFromRegistry)
 
 app.get("/summary-latest",
   express.json(),
