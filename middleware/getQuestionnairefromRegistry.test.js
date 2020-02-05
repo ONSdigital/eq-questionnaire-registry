@@ -1,4 +1,4 @@
-const databases = ["dynamo", "firestore"]
+const databases = ["dynamo", "firestore", ""]
 
 const mockResponse = () => {
   const res = {}
@@ -69,15 +69,17 @@ describe.each(databases)("testing getQuestionnaireFromRegistry", (databaseName) 
     res = mockResponse()
     req = mockRequest()
     req.body.survey_id = "abc"
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
     await getQuestionnaireFromRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
-    expect(res.json).toHaveBeenCalledWith({ message: "No record found" })
+    expect(res.json).toHaveBeenCalledWith({ message: "error getting record" })
+    spy.mockRestore()
   })
 
   it(`should throw an error getting record when missing key fields ${databaseName}`, async () => {
     req = {}
     res = mockResponse()
-    const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
     await getQuestionnaireFromRegistry(req, res, next)
     spy.mockRestore()
   })

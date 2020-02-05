@@ -82,32 +82,32 @@ const RegistryModel = dynamoose.model(
   registrySchema
 )
 
-const getQuestionnaire = async (params) => {
+const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", version = "0" }) => {
   let data
-  if (!params.id && (!params.survey_id || !params.form_type)) {
+  if (!id && (!survey_id || !form_type)) {
     const newErr = new Error("id or survey_id and form_type not provided in request")
-    console.log(newErr)
+    console.error(newErr)
     throw newErr
   }
   try {
-    if (params.id) {
-      const qid = `${params.id}`
-      const language = `${params.language || "en"}`
-      data = await RegistryModel.queryOne({ qid: qid, language: language }).exec()
+    if (id) {
+      data = await RegistryModel.queryOne({ qid: id, language: language }).exec()
     }
     else {
-      const id = `${params.survey_id}_${params.form_type}_${params.language || "en"}`
-      const sortKey = `${params.version || "0"}`
+      const id = `${survey_id}_${form_type}_${language}`
+      const sortKey = `${version}`
       data = await RegistryModel.get({ id: id, sort_key: sortKey })
     }
 
     if (data) {
       return JSON.parse(data.schema)
     }
-    return
+    else {
+      throw new Error("record not found")
+    }
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     throw new Error("error getting record")
   }
 }
@@ -133,7 +133,7 @@ const saveQuestionnaire = async (data) => {
     await modelVersion.save()
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     throw new Error("error saving record")
   }
 }
@@ -150,7 +150,7 @@ const getQuestionnaireSummary = async (latest) => {
     }
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     throw new Error("error getting summary")
   }
   return JSON.parse(JSON.stringify(data))

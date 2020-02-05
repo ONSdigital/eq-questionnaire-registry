@@ -44,7 +44,7 @@ const insertIntoSurveyResister = async (req, res, next) => {
     }
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     error = true
   }
 

@@ -67,7 +67,7 @@ describe.each(databases)("testing database modules", (databaseName) => {
 
   it(`should throw an error getting record when missing key fields ${databaseName}`, async () => {
     const badReq = {}
-    const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
     expect(database.getQuestionnaire(badReq)).rejects.toEqual(new Error("id or survey_id and form_type not provided in request"))
     spy.mockRestore()
   })

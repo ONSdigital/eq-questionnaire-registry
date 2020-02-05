@@ -64,7 +64,17 @@ describe.each(databases)("testing InsertIntoRegistry", (databaseName) => {
   it(`should throw an error when sending a bad request using ${databaseName}`, async () => {
     res = mockResponse()
     req = mockBadRequest()
-    const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    await insertIntoRegistry(req, res, next)
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.json).toHaveBeenCalledWith({ message: "Sorry, something went wrong inserting into the register" })
+    spy.mockRestore()
+  })
+
+  it(`should throw an error when sending no data using ${databaseName}`, async () => {
+    res = mockResponse()
+    req = {}
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
     await insertIntoRegistry(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ message: "Sorry, something went wrong inserting into the register" })

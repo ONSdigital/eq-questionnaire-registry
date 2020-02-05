@@ -10,18 +10,20 @@ const getQuestionnaireFromRegistry = async (req, res, next) => {
     Object.assign(requestParams, req.params)
 
     data = await database.getQuestionnaire(requestParams)
-    if (!data) {
-      res.status(500).json({ message: "No record found" })
-    }
-    else {
-      res.status(200).json(data)
-    }
+    res.status(200).json(data)
     next()
   }
-  catch (e) {
-    res.status(500).json({
-      message: "Sorry, could not retrieve the schema from the register"
-    })
+  catch (err) {
+    if (err.message === "record not found") {
+      res.status(500).json({
+        message: "record not found"
+      })
+    }
+    else {
+      res.status(500).json({
+        message: err.message
+      })
+    }
     next()
   }
 }

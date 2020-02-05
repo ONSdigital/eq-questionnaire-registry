@@ -5,64 +5,63 @@ let db
 if (process.env.GOOGLE_AUTH_PROJECT_ID) {
   db = new Firestore({
     projectId: process.env.GOOGLE_AUTH_PROJECT_ID
-    // keyFilename: '../test_firestore_account.json'
   })
 }
 else {
   db = new Firestore()
 }
 
-const getQuestionnaire = async (params) => {
+const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", version = "0" }) => {
   let docRef, doc
 
-  if (!params.id && (!params.survey_id || !params.form_type)) {
+  if (!id && (!survey_id || !form_type)) {
     const newErr = new Error("id or survey_id and form_type not provided in request")
-    console.log(newErr)
+    console.error(newErr)
     throw newErr
   }
 
   try {
-    if (params.id) {
-      docRef = await db.collection("schema_versions").doc(params.id).collection("languages").doc(params.language || "en")
+    if (id) {
+      docRef = await db.collection("schema_versions").doc(id).collection("languages").doc(language)
     }
     else {
-      if (!params.version) {
-        docRef = await getSchemaSummary(params)
+      if (version === "0") {
+        docRef = await getSchemaSummary({ survey_id, form_type })
         doc = await docRef.get()
         if (!doc.exists) {
-          return
+          throw new Error("record not found")
         }
-        params.version = await doc.data().registry_version
+        version = await doc.data().registry_version
       }
       const queryRef = await db.collectionGroup('languages')
-        .where("survey_id", "==", params.survey_id)
-        .where("form_type", "==", params.form_type)
-        .where("language", "==", params.language || "en")
-        .where("registry_version", "==", params.version).limit(1).get()
+        .where("survey_id", "==", survey_id)
+        .where("form_type", "==", form_type)
+        .where("language", "==", language || "en")
+        .where("registry_version", "==", version).limit(1).get()
       if (queryRef.size === 0) {
-        return
+        throw new Error("record not found")
       }
       docRef = queryRef.docs[0].ref
     }
 
     doc = await docRef.get()
     if (!doc.exists) {
-      return
+      throw new Error("record not found")
     }
     const data = await doc.data()
     return JSON.parse(data.schema)
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     throw new Error("error getting record")
   }
 }
 
-const getSchemaSummary = async (data) => {
+const getSchemaSummary = async ({ survey_id, form_type }) => {
   let docRef
   const queryRef = await db.collection('schema_summary')
-    .where("survey_id", "==", data.survey_id)
-    .where("form_type", "==", data.form_type).limit(1).get()
+    .where("survey_id", "==", survey_id)
+    .where("form_type", "==", form_type).limit(1).get()
   if (queryRef.size > 0) {
     docRef = queryRef.docs[0].ref
   }
@@ -72,8 +71,8 @@ const getSchemaSummary = async (data) => {
   return docRef
 }
 
-const upsertSchemaVersion = async (schemaDocRef, data) => {
-  const docRef = await db.collection('schema_versions').doc(data.qid)
+const upsertSchemaVersion = async (schemaDocRef, { survey_id, form_type, qid }) => {
+  const docRef = await db.collection('schema_versions').doc(qid)
   const docVersion = await docRef.get()
   if (!docVersion.exists) {
     const schemaDoc = await schemaDocRef.get()
@@ -83,8 +82,8 @@ const upsertSchemaVersion = async (schemaDocRef, data) => {
     }
     const nextVersionNumber = (parseInt(currentVersionNumber) + 1).toString()
     await docRef.set({
-      survey_id: data.survey_id,
-      form_type: data.form_type,
+      survey_id,
+      form_type,
       registry_version: nextVersionNumber
     })
   }
@@ -97,7 +96,7 @@ const upsertSchemaLanguage = async (schemaVersionDocRef, data) => {
   return docRef
 }
 
-const upsertSchemaSummary = async (schemaDocRef, data) => {
+const upsertSchemaSummary = async (schemaDocRef, { survey_id, form_type, language, qid, registry_version, title }) => {
   let languages = []
   let model = {}
   const schemaDoc = await schemaDocRef.get()
@@ -105,16 +104,16 @@ const upsertSchemaSummary = async (schemaDocRef, data) => {
     model = await schemaDoc.data()
     languages = model.languages
   }
-  if (!languages.includes(data.language)) {
-    languages.push(data.language)
+  if (!languages.includes(language)) {
+    languages.push(language)
   }
-  model.survey_id = data.survey_id
-  model.form_type = data.form_type
-  model.qid = data.qid
-  model.registry_version = data.registry_version
+  model.survey_id = survey_id
+  model.form_type = form_type
+  model.qid = qid
+  model.registry_version = registry_version
   model.languages = languages
-  if (data.language === "en") {
-    model.title = data.title
+  if (language === "en") {
+    model.title = title
   }
   await schemaDocRef.set(model)
 }
@@ -132,7 +131,7 @@ const saveQuestionnaire = async (data) => {
     await upsertSchemaSummary(schemaDocRef, data)
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     throw new Error("error saving record")
   }
 }
@@ -152,7 +151,7 @@ const getQuestionnaireSummary = async (latest) => {
     result = await colRef.get()
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     throw new Error("error getting summary")
   }
 
