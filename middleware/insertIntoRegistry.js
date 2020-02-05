@@ -18,15 +18,14 @@ const insertIntoSurveyResister = async (req, res, next) => {
       throw new Error("No data in request body")
     }
     for (const doc of data) {
-      const { survey_id, form_type, schemas } = doc
+      const { survey_id, form_type, variants } = doc
       const qid = uuid()
-      for (const schemaInfo of schemas) {
-        const questionnaire = await getQuestionnaireFromPublisher(schemaInfo.author_id)
-        questionnaire.theme = themeLookup[schemaInfo.theme]
+      for (const { author_id, language = "en", runner_version = "v0", theme } of variants) {
+        const questionnaire = await getQuestionnaireFromPublisher(author_id)
+        questionnaire.theme = themeLookup[theme]
         questionnaire.form_type = form_type
         questionnaire.survey_id = survey_id
         const { survey_version = "0", title } = questionnaire
-        const { author_id, language = "en", runner_version = "v0" } = schemaInfo
         const model = {
           author_id,
           survey_id,

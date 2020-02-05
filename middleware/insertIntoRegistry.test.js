@@ -13,7 +13,7 @@ const mockRequest = () => {
     body: [{
       survey_id: "ins_test_001",
       form_type: "123",
-      schemas: [
+      variants: [
         {
           language: "en",
           theme: "ONS",
