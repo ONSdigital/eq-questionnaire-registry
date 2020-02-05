@@ -9,7 +9,7 @@ const mockResponse = () => {
 }
 
 const mockRequest = () => {
-  return {
+  const req = {
     body: {
       survey_id: "iqr_test_001",
       form_type: "O456",
@@ -17,10 +17,11 @@ const mockRequest = () => {
       schema: mockSchema()
     }
   }
+  return req
 }
 
 const mockBadRequest = () => {
-  return {
+  const badReq = {
     body: {
       survey_id: "123",
       survey_version: "2",
@@ -29,13 +30,15 @@ const mockBadRequest = () => {
       schema: mockSchema()
     }
   }
+  return badReq
 }
 
 const mockDbCall = () => {
-  return {
+  const dbCall = {
     survey_id: "iqr_test_001",
     form_type: "O456"
   }
+  return dbCall
 }
 
 describe.each(databases)("testing insertQuestionnaireIntoRegistry", (databaseName) => {

@@ -3,13 +3,6 @@ jest.mock('request')
 const request = require("request-promise-native")
 const getQuestionnaireFromPublisher = require("./getQuestionnaireFromPublisher")
 
-const mockResponse = () => {
-  const res = { questionnaire: {} }
-  res.status = jest.fn().mockReturnValue(res)
-  res.json = jest.fn().mockReturnValue(res)
-  return res
-}
-
 const mockRequest = () => {
   const req = {
     params: {},

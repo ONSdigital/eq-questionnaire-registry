@@ -15,7 +15,7 @@ const getQuestionnaireFromRegistry = async (req, res, next) => {
   }
   catch (err) {
     if (err.message === "record not found") {
-      res.status(500).json({
+      res.status(404).json({
         message: "record not found"
       })
     }

@@ -9,7 +9,7 @@ const mockResponse = () => {
 }
 
 const mockRequest = () => {
-  return {
+  const req = {
     body: [{
       survey_id: "ins_test_001",
       form_type: "123",
@@ -22,21 +22,24 @@ const mockRequest = () => {
         }]
     }]
   }
+  return req
 }
 
 const mockBadRequest = () => {
-  return {
+  const badReq = {
     body: {
       surveyId: "1"
     }
   }
+  return badReq
 }
 
 const mockDbCall = () => {
-  return {
+  const dbCall = {
     survey_id: "ins_test_001",
     form_type: "123"
   }
+  return dbCall
 }
 
 describe.each(databases)("testing InsertIntoRegistry", (databaseName) => {
