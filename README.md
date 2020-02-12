@@ -68,7 +68,7 @@ The REST API is exposed with the following endpoints
 /summary-all
 /questionnaires
 /questionnaires/:id
-/questionnaires/:id/version/:version
+/questionnaires/:id/languages/:language
 /surveys/:survey_id/form-types/:form_type
 /surveys/:survey_id/form-types/:form_type/languages/:language
 /surveys/:survey_id/form-types/:form_type/versions/:version
