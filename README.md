@@ -137,7 +137,7 @@ These endpoints return a list of the schema details (not the actual schemas).
 
 questionnaires - lists the most recent versions.
 
-questionnaires/versions - Lists all versions of all schemas held in the registry.
+questionnaires-versions - Lists all versions of all schemas held in the registry.
 
 
 ---
