@@ -15,8 +15,8 @@ const mockRequest = () => {
       surveyVersion: 1,
       publishDetails: [
         {
-          survey_id: "ins_test_001",
-          form_type: "123",
+          surveyId: "ins_test_001",
+          formType: "123",
           variants: [
             {
               language: "en",
