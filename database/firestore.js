@@ -148,18 +148,18 @@ const getQuestionnaireSummary = async (latest) => {
     else {
       colRef = await db.collectionGroup('languages').select(...attributes)
     }
+
     result = await colRef.get()
+    result.forEach((doc) => {
+      response.push(doc.data())
+    })
+
+    return response
   }
   catch (e) {
     console.error(e)
     throw new Error("error getting summary")
   }
-
-  result.forEach((doc) => {
-    response.push(doc.data())
-  })
-
-  return response
 }
 
 module.exports = { saveQuestionnaire, getQuestionnaire, getQuestionnaireSummary }

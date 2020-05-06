@@ -148,12 +148,12 @@ const getQuestionnaireSummary = async (latest) => {
     else {
       data = await RegistryModel.scan('sort_key').not().eq("0").attributes(attributes).exec()
     }
+    return JSON.parse(JSON.stringify(data))
   }
   catch (e) {
     console.error(e)
     throw new Error("error getting summary")
   }
-  return JSON.parse(JSON.stringify(data))
 }
 
 module.exports = { getQuestionnaire, saveQuestionnaire, getQuestionnaireSummary }
