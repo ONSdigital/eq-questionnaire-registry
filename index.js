@@ -30,7 +30,7 @@ app.get("/questionnaires",
   getQuestionnaireSummary
 )
 
-app.get("/questionnaires/versions",
+app.get("/questionnaires-versions",
   express.json(),
   (req, res, next) => {
     req.latest = false; next()
