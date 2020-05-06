@@ -62,11 +62,8 @@ To fix linting errors gloabally use:
 The REST API is exposed with the following endpoints
 
 ```
-/submit
-/submit-json
-/summary-latest
-/summary-all
 /questionnaires
+/questionnaires-json
 /questionnaires/:id
 /questionnaires/:id/languages/:language
 /surveys/:survey_id/form-types/:form_type
@@ -76,7 +73,7 @@ The REST API is exposed with the following endpoints
 /status
 ```
 
-### Submit
+### questionnnaires(post)
 gets a schema from publisher using the author id and inserts it into the registry, 
 include the following in the body of the json request.
 
@@ -106,7 +103,7 @@ include the following in the body of the json request.
 ```
 These values are provided by author, hence the camel case attributes.
 
-### submit-json
+### questionnnaires-json(post)
 inserts the provided schema into the registry. include the following in the body of the json request.
 
 ```
@@ -135,12 +132,12 @@ version and language are optional. if not provided the latest english(en) versio
 }
 ```
 
-### summary-latest/ summary-all
+### summaries
 These endpoints return a list of the schema details (not the actual schemas).
 
-summary-latest - lists the most recent versions.
+questionnaires - lists the most recent versions.
 
-summary-all - Lists all versions of all schemas held in the registry.
+questionnaires/versions - Lists all versions of all schemas held in the registry.
 
 
 ---
