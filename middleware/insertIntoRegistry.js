@@ -19,6 +19,9 @@ const insertIntoSurveyResister = async (req, res, next) => {
     }
     for (const doc of data.publishDetails) {
       const { surveyId: survey_id, formType: form_type, variants } = doc;
+      console.log(
+        `Request to publish questionnaire {survey_id: ${survey_id}, form_type: ${form_type}} received`
+      );
       const qid = uuid();
       for (const {
         author_id,
@@ -44,6 +47,9 @@ const insertIntoSurveyResister = async (req, res, next) => {
           qid,
         };
         await database.saveQuestionnaire(model);
+        console.log(
+          `Questionnaire {survey_id: ${survey_id}, form_type: ${form_type}} saved`
+        );
       }
     }
   } catch (e) {
