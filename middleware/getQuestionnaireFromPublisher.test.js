@@ -30,6 +30,6 @@ describe("testing getQuestionnaireFromPublisher", () => {
     request.mockImplementation(async () => {
       throw new Error("test error")
     })
-    expect(getQuestionnaireFromPublisher(req)).rejects.toEqual(new Error("Sorry, something went wrong with the Publisher request"))
+    expect(getQuestionnaireFromPublisher(req)).rejects.toEqual(new Error("Sorry, something went wrong with the Publisher request; test error"))
   })
 })
