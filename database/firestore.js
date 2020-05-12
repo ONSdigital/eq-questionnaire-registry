@@ -74,20 +74,34 @@ const getSchemaSummary = async ({ survey_id, form_type }) => {
   return docRef
 }
 
-const upsertSchemaVersion = async (schemaDocRef, { survey_id, form_type, qid }) => {
+const upsertSchemaVersion = async (schemaDocRef, { survey_id, form_type, qid, language, title }) => {
+  let languages = []
+  let model = {}
+  let new_title = ""
   const docRef = await db.collection(versionCollection).doc(qid)
   const docVersion = await docRef.get()
   if (!docVersion.exists) {
     const schemaDoc = await schemaDocRef.get()
     let currentVersionNumber = "0"
     if (schemaDoc.exists) {
-      currentVersionNumber = await schemaDoc.data().registry_version
+      model = await schemaDoc.data()
+      currentVersionNumber = model.registry_version
+      languages = model.languages
+      new_title = model.title
+    }
+    if (!languages.includes(language)) {
+      languages.push(language)
+    }
+    if (language === "en") {
+      new_title = title
     }
     const nextVersionNumber = (parseInt(currentVersionNumber) + 1).toString()
     await docRef.set({
       survey_id,
       form_type,
-      registry_version: nextVersionNumber
+      registry_version: nextVersionNumber,
+      languages,
+      title: new_title
     })
   }
   return docRef
