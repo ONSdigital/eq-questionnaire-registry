@@ -25,7 +25,7 @@ const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", ver
 
   try {
     if (id) {
-      docRef = await db.collection(versionCollection).doc(id).collection("languages").doc(language)
+      docRef = await db.collection(versionCollection).doc(id).collection("registry_schemas").doc(language)
     }
     else {
       if (version === "0") {
@@ -36,7 +36,7 @@ const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", ver
         }
         version = await doc.data().registry_version
       }
-      const queryRef = await db.collectionGroup('languages')
+      const queryRef = await db.collectionGroup('registry_schemas')
         .where("survey_id", "==", survey_id)
         .where("form_type", "==", form_type)
         .where("language", "==", language || "en")
@@ -94,7 +94,7 @@ const upsertSchemaVersion = async (schemaDocRef, { survey_id, form_type, qid }) 
 }
 
 const upsertSchemaLanguage = async (schemaVersionDocRef, data) => {
-  const docRef = await schemaVersionDocRef.collection('languages').doc(data.language)
+  const docRef = await schemaVersionDocRef.collection('registry_schemas').doc(data.language)
   await docRef.set(data)
   return docRef
 }
@@ -149,7 +149,7 @@ const getQuestionnaireSummary = async (latest) => {
       colRef = await db.collection(summaryCollection).select(...attributes)
     }
     else {
-      colRef = await db.collectionGroup('languages').select(...attributes)
+      colRef = await db.collectionGroup('registry_schemas').select(...attributes)
     }
 
     result = await colRef.get()
