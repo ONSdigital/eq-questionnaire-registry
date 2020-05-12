@@ -88,6 +88,7 @@ const upsertSchemaVersion = async (schemaDocRef, { survey_id, form_type, qid, la
   }
   model.survey_id = survey_id
   model.form_type = form_type
+  model.qid = qid
   model.registry_version = (parseInt(model.registry_version) + 1).toString()
   if (!model.languages.includes(language)) {
     model.languages.push(language)
@@ -146,7 +147,7 @@ const saveQuestionnaire = async (data) => {
 }
 
 const getQuestionnaireSummary = async (latest) => {
-  const attributes = ["survey_id", "form_type", "registry_version", "title", "language", "qid"]
+  const attributes = ["survey_id", "form_type", "registry_version", "title", "languages", "qid"]
   let result, colRef
   const response = []
 
@@ -155,7 +156,7 @@ const getQuestionnaireSummary = async (latest) => {
       colRef = await db.collection(summaryCollection).select(...attributes)
     }
     else {
-      colRef = await db.collectionGroup('registry_schemas').select(...attributes)
+      colRef = await db.collection(versionCollection).select(...attributes)
     }
 
     result = await colRef.get()
