@@ -1,5 +1,8 @@
 const { Firestore } = require('@google-cloud/firestore')
 const { uuid } = require('uuidv4')
+const collectionPrefix = process.env.FIRESTORE_COLLECTION_PREFIX || "registry"
+const versionCollection = collectionPrefix + "-schema-versions"
+const summaryCollection = collectionPrefix + "-schema-summary"
 
 let db
 if (process.env.GOOGLE_AUTH_PROJECT_ID) {
@@ -22,7 +25,7 @@ const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", ver
 
   try {
     if (id) {
-      docRef = await db.collection("schema_versions").doc(id).collection("languages").doc(language)
+      docRef = await db.collection(versionCollection).doc(id).collection("languages").doc(language)
     }
     else {
       if (version === "0") {
@@ -59,20 +62,20 @@ const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", ver
 
 const getSchemaSummary = async ({ survey_id, form_type }) => {
   let docRef
-  const queryRef = await db.collection('schema_summary')
+  const queryRef = await db.collection(summaryCollection)
     .where("survey_id", "==", survey_id)
     .where("form_type", "==", form_type).limit(1).get()
   if (queryRef.size > 0) {
     docRef = queryRef.docs[0].ref
   }
   else {
-    docRef = await db.collection('schema_summary').doc(uuid())
+    docRef = await db.collection(summaryCollection).doc(uuid())
   }
   return docRef
 }
 
 const upsertSchemaVersion = async (schemaDocRef, { survey_id, form_type, qid }) => {
-  const docRef = await db.collection('schema_versions').doc(qid)
+  const docRef = await db.collection(versionCollection).doc(qid)
   const docVersion = await docRef.get()
   if (!docVersion.exists) {
     const schemaDoc = await schemaDocRef.get()
@@ -143,7 +146,7 @@ const getQuestionnaireSummary = async (latest) => {
 
   try {
     if (latest) {
-      colRef = await db.collection('schema_summary').select(...attributes)
+      colRef = await db.collection(summaryCollection).select(...attributes)
     }
     else {
       colRef = await db.collectionGroup('languages').select(...attributes)
