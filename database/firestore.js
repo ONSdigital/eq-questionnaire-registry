@@ -36,15 +36,14 @@ const getQuestionnaire = async ({ id, survey_id, form_type, language = "en", ver
         }
         version = await doc.data().registry_version
       }
-      const queryRef = await db.collectionGroup('registry_schemas')
+      const queryRef = await db.collection(versionCollection)
         .where("survey_id", "==", survey_id)
         .where("form_type", "==", form_type)
-        .where("language", "==", language || "en")
         .where("registry_version", "==", version).limit(1).get()
       if (queryRef.size === 0) {
         throw new Error("record not found")
       }
-      docRef = queryRef.docs[0].ref
+      docRef = queryRef.docs[0].ref.collection("registry_schemas").doc(language)
     }
 
     doc = await docRef.get()
