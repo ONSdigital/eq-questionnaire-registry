@@ -39,13 +39,13 @@ describe.each(databases)("testing database modules", (databaseName) => {
 
   it(`should save a schema into the database using ${databaseName}`, async () => {
     expect(async () => {
+      model.qid = "db_qid_003"
+      model.form_type = "678"
       await database.saveQuestionnaire(model)
     }).not.toThrow()
   })
 
   it(`should retrieve the latest version using ${databaseName}`, async () => {
-    model = mockModel()
-    model.survey_id = "db_test_002"
     data = await database.getQuestionnaire(req)
     expect(data).toMatchObject({ eq_id: "eqid_002", title: "test" })
     expect(data).toMatchObject({ schema_version: "2" })
