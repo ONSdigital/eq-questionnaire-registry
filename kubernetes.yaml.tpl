@@ -44,6 +44,11 @@ spec:
               secretKeyRef:
                 name: registry-secrets
                 key: PUBLISHER_URL
+          - name: FIRESTORE_COLLECTION_PREFIX
+            valueFrom:
+              secretKeyRef:
+                name: registry-secrets
+                key: FIRESTORE_COLLECTION_PREFIX
 ---
 kind: Service
 apiVersion: v1
