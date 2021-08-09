@@ -9,9 +9,9 @@ steps:
           docker build -t "eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$SHORT_SHA" .
           docker push "eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$SHORT_SHA"
         else
-          echo "********************"
-          echo "* Build skipped    *"
-          echo "********************"
+          echo "*************************************************************"
+          echo "* Build not required                                        *"
+          echo "*************************************************************"
         fi
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
@@ -25,9 +25,9 @@ steps:
           eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$SHORT_SHA \
           eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$TAG_NAME
         else
-          echo "**********************"
-          echo "* Tagging skipped    *"
-          echo "**********************"
+          echo "*************************************************************"
+          echo "* Tagging not required                                      *"
+          echo "*************************************************************"
         fi
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
