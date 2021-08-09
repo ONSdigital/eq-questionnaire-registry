@@ -1,22 +1,17 @@
 steps:
   - name: docker
-    id: build_registry
+    id: build_and_push_registry
     entrypoint: sh
     args: 
       - '-c'
       - |
         if [ $_ENV = "staging" ]; then
           docker build -t "eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$SHORT_SHA" .
-        fi
-
-  - name: docker
-    id: push_registry
-    entrypoint: sh
-    args: 
-      - '-c'
-      - |
-        if [ $_ENV = "staging" ]; then
           docker push "eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$SHORT_SHA"
+        else
+          echo "******************"
+          echo "* Build skipped" *
+          echo "******************"
         fi
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
@@ -29,6 +24,10 @@ steps:
           gcloud container images add-tag \
           eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$SHORT_SHA \
           eu.gcr.io/ons-eqbs-images/eq-questionnaire-registry:$TAG_NAME
+        else
+          echo "********************"
+          echo "* Tagging skipped" *
+          echo "********************"
         fi
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
